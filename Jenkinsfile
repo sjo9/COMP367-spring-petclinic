@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     triggers {
-        cron('H/10 * * * 1') // 매주 월요일 10분 간격
+        cron('H/10 * * * 1')
     }
     
     stages {
@@ -17,7 +17,7 @@ pipeline {
                 stage('Build') {
                     steps {
                         script {
-                            sh './mvnw clean package -DskipTests'  // 테스트를 건너뛰고 빌드만 실행
+                            sh './mvnw clean package -DskipTests'
                         }
                     }
                 }
@@ -25,7 +25,7 @@ pipeline {
                 stage('Test') {
                     steps {
                         script {
-                            sh './mvnw test'  // 테스트만 실행
+                            sh './mvnw test'
                         }
                     }
                 }
@@ -35,7 +35,7 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 script {
-                    sh './mvnw jacoco:report'  // Jacoco 리포트 생성
+                    sh './mvnw jacoco:report' 
                 }
             }
         }
