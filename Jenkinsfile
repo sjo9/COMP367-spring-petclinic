@@ -1,10 +1,10 @@
 pipeline {
     agent any
-
+    
     triggers {
-        cron('H/10 * * * 1')
+        cron('H/10 * * * 1') // 매주 월요일 10분 간격
     }
-
+    
     stages {
         stage('Checkout') {
             steps {
@@ -12,23 +12,30 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                script {
-                    sh './mvnw clean package' 
+        stage('Build and Test') {
+            parallel {
+                stage('Build') {
+                    steps {
+                        script {
+                            sh './mvnw clean package -DskipTests'  // 테스트를 건너뛰고 빌드만 실행
+                        }
+                    }
+                }
+
+                stage('Test') {
+                    steps {
+                        script {
+                            sh './mvnw test'  // 테스트만 실행
+                        }
+                    }
                 }
             }
         }
 
-        stage('Test and Code Coverage') {
+        stage('Code Coverage') {
             steps {
                 script {
-                    sh './mvnw test' 
-                }
-            }
-            post {
-                always {
-                    jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java'
+                    sh './mvnw jacoco:report'  // Jacoco 리포트 생성
                 }
             }
         }
